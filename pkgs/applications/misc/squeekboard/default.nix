@@ -4,7 +4,7 @@
 , cmake
 , meson
 , ninja
-, pkgconfig
+, pkg-config
 , gnome3
 , glib
 , gtk3
@@ -12,71 +12,66 @@
 , wayland-protocols
 , rustc
 , cargo
-, libcroco
 , libxml2
 , libxkbcommon
 , rustPlatform
 , makeWrapper
+, substituteAll
+, fetchpatch
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "squeekboard";
-  version = "1.9.1";
+  version = "1.9.2";
 
   src = fetchFromGitLab {
     domain = "source.puri.sm";
     owner = "Librem5";
     repo = pname;
-    rev = "334898c5a5d45a5883654b4f2f07f28ac8f2bfc4";
-    sha256 = "1nrihpffr91p3ipif5k5z9vcvkwxk6qy8hp93w13s7gnwl2g93hx";
+    rev = "v${version}";
+    sha256 = "02jjc9qxzb4iw3vypqdaxzs5mc66zkfmij1yrv72h99acg5s3ncz";
   };
+
+  patches = [
+    # Add missing dependency 'gio-unix-2.0' to meson.build.
+    # https://source.puri.sm/Librem5/squeekboard/-/merge_requests/356
+    (fetchpatch {
+      url = "https://source.puri.sm/Librem5/squeekboard/-/merge_requests/356.patch";
+      sha256 = "1xi7h2nsrlf7szlj41kj6x1503af9svk5yj19l0q32ln3c40kgfs";
+    })
+  ];
 
   nativeBuildInputs = [
     meson
     ninja
-    pkgconfig
+    pkg-config
     rustc
     cargo
-    glib.dev
-    gtk3.dev
+    glib  # for glib-compile-resources
     wayland
-    gnome3.gnome-desktop
     makeWrapper
   ];
 
   buildInputs = [
-    glib.dev
-    gtk3.dev
+    gtk3  # for gio-2.0
     gnome3.gnome-desktop
     wayland
     wayland-protocols
-    libcroco
     libxml2
     libxkbcommon
   ];
 
-  cargoSha256 = "1fkhj4i2l2hdk9wvld6ryvnm1mxfwx3s555r7n42pg9f5namn1sr";
+  cargoSha256 = "00gzw703w16i81yna4winj7gi4w7a1p986ggnx48jvyi0c14mxx0";
 
-  NIX_CFLAGS_COMPILE = "-I${glib.dev}/include/gio-unix-2.0";
-
-  configurePhase = "meson . _build/";
-  buildPhase = ''
-    ninja -C _build test
-  '';
-  installPhase = ''
-    runHook preInstall && DESTDIR="$out" ninja -C _build install && runHook postInstall
-  '';
-
-  postFixup = ''
-    mkdir -p $out/bin
-    cp _build/src/squeekboard $out/bin/
-  '';
-
-  check = false;
+  # Don't use buildRustPackage phases, only use it for rust deps setup
+  configurePhase = null;
+  buildPhase = null;
+  checkPhase = null;
+  installPhase = null;
 
   meta = with stdenv.lib; {
     description = "Squeekboard is a virtual keyboard supporting Wayland";
-    homepage = https://source.puri.sm/Librem5/squeekboard;
+    homepage = "https://source.puri.sm/Librem5/squeekboard";
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ masipcat ];
     platforms = platforms.linux;

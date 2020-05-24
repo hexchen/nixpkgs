@@ -2,7 +2,7 @@
 , fetchFromGitLab
 , meson
 , ninja
-, pkgconfig
+, pkg-config
 , cmake
 , wrapGAppsHook
 , glib
@@ -15,22 +15,23 @@
 
 stdenv.mkDerivation rec {
   pname = "feedbackd";
-  version = "v0.0.0+git20200420";
+  version = "0.0.0+git20200527";
 
   src = fetchFromGitLab {
     domain = "source.puri.sm";
     owner = "Librem5";
     repo = pname;
-    rev = "fd5e63c0a0c1b9296249d517c6849402a3a3ca10";
-    sha256 = "0glzc284wbvwvax52lp6sqr4whhpbqrkn8isidlqz1yrag3phfv9";
+    rev = "v${version}";
+    sha256 = "1wbkzxnqjydfgjvp7vz4ghczcz740zcb1yn90cb6gb5md4n6qx2y";
   };
 
   nativeBuildInputs = [
-    cmake
     meson
     ninja
-    pkgconfig
+    pkg-config
     wrapGAppsHook
+    vala
+    gobject-introspection
   ];
 
   buildInputs = [
@@ -38,17 +39,11 @@ stdenv.mkDerivation rec {
     gsound
     libgudev
     json-glib
-    vala
-    gobject-introspection
   ];
-
-  configurePhase = "meson build --prefix=$out";
-  buildPhase = "ninja -C build";
-  installPhase = "ninja -C build install";
 
   meta = with stdenv.lib; {
     description = "A daemon to provide haptic (and later more) feedback on events";
-    homepage = https://source.puri.sm/Librem5/feedbackd;
+    homepage = "https://source.puri.sm/Librem5/feedbackd";
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ masipcat ];
     platforms = platforms.linux;

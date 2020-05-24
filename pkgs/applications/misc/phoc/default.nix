@@ -2,7 +2,7 @@
 , fetchFromGitLab
 , meson
 , ninja
-, pkgconfig
+, pkg-config
 , wrapGAppsHook
 , libinput
 , gnome3
@@ -18,21 +18,20 @@
 
 stdenv.mkDerivation rec {
   pname = "phoc";
-  version = "0.1.7";
+  version = "0.1.8";
 
   src = fetchFromGitLab {
     domain = "source.puri.sm";
     owner = "Librem5";
     repo = pname;
-    rev = "3d68b091d0075bd549f6fbb84d6c152f01a2354e";
-    sha256 = "1007kxap87h1bi79sz45lfb478d93pq0676cr5rnhbanljm1n28n";
+    rev = "v${version}";
+    sha256 = "135bpfxgpizfvhdgyl1n3b1b2gpddb8i7s2lmzfijiaa3gz8bdnq";
   };
 
   nativeBuildInputs = [
-    cmake
     meson
     ninja
-    pkgconfig
+    pkg-config
     wrapGAppsHook
   ];
 
@@ -43,16 +42,13 @@ stdenv.mkDerivation rec {
     glib
     gtk3
     gnome3.gnome-desktop
+    # For keybindings settings schemas
     gnome3.mutter
     wayland
     wlroots
   ];
 
-  NIX_CFLAGS_COMPILE = "-I${libdrm.dev}/include/libdrm/";
-
-  configurePhase = "meson build --prefix=$out";
-  buildPhase = "ninja -C build";
-  installPhase = "runHook preInstall && ninja -C build install && runHook postInstall";
+  mesonFlags = ["-Dembed-wlroots=disabled"];
 
   postInstall = ''
     ${glib.dev}/bin/glib-compile-schemas $out/share/glib-2.0/schemas
@@ -60,7 +56,7 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Wayland compositor for mobile phones like the Librem 5";
-    homepage = https://source.puri.sm/Librem5/phoc;
+    homepage = "https://source.puri.sm/Librem5/phoc";
     license = licenses.gpl3Plus;
     maintainers = with maintainers; [ masipcat ];
     platforms = platforms.linux;
