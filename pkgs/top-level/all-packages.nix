@@ -6559,6 +6559,8 @@ in
 
   phoc = callPackage ../applications/misc/phoc { };
 
+  phosh = callPackage ../applications/window-managers/phosh { };
+  
   pim6sd = callPackage ../servers/pim6sd { };
 
   pinentry = libsForQt5.callPackage ../tools/security/pinentry {
