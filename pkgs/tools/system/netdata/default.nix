@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig
+{ stdenv, callPackage, fetchFromGitHub, makeWrapper, autoreconfHook, pkgconfig
 , CoreFoundation, IOKit, libossp_uuid
 , curl, libcap,  libuuid, lm_sensors, zlib
 , withCups ? false, cups
@@ -6,13 +6,17 @@
 , withIpmi ? (!stdenv.isDarwin), freeipmi
 , withNetfilter ? (!stdenv.isDarwin), libmnl, libnetfilter_acct
 , withSsl ? true, openssl
+, withCloud ? true, libwebsockets_3_2, json_c
 , withDebug ? false
 }:
 
 with stdenv.lib;
 
-stdenv.mkDerivation rec {
-  version = "1.19.0";
+let
+  go-d-plugin = callPackage ./go.d.plugin.nix {};
+  mosquitto = callPackage ./mosquitto.nix {};
+in stdenv.mkDerivation rec {
+  version = "1.23.0";
   pname = "netdata";
 
   src = fetchFromGitHub {
@@ -22,8 +26,9 @@ stdenv.mkDerivation rec {
     sha256 = "1s6kzx4xh8b6v7ki8h2mfzprj5rxvlgx2md20cr8c0v81qpz3q3q";
   };
 
-  nativeBuildInputs = [ autoreconfHook pkgconfig ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig makeWrapper ];
   buildInputs = [ curl.dev zlib.dev ]
+    ++ optionals withCloud [ json_c libwebsockets_3_2 ]
     ++ optionals stdenv.isDarwin [ CoreFoundation IOKit libossp_uuid ]
     ++ optionals (!stdenv.isDarwin) [ libcap.dev libuuid.dev ]
     ++ optionals withCups [ cups ]
@@ -48,19 +53,21 @@ stdenv.mkDerivation rec {
     ''}
   '';
 
-  preConfigure =  optionalString (!stdenv.isDarwin) ''
+  preConfigure = optionalString withCloud ''
+    mkdir -p externaldeps
+    cp -r "${mosquitto}/lib" externaldeps/mosquitto;
+    cp -r "${libwebsockets_3_2}/lib" externaldeps/libwebsockets;
+  '' + optionalString (!stdenv.isDarwin) ''
     substituteInPlace collectors/python.d.plugin/python_modules/third_party/lm_sensors.py \
       --replace 'ctypes.util.find_library("sensors")' '"${lm_sensors.out}/lib/libsensors${stdenv.hostPlatform.extensions.sharedLibrary}"'
   '';
 
-  configureFlags = [
-    "--localstatedir=/var"
-    "--sysconfdir=/etc"
-  ];
+  configureFlags = [ "--localstatedir=/var" "--sysconfdir=/etc" ]
+    ++ optional withCloud "--enable-cloud";
 
-  postFixup = ''
-    rm -r $out/sbin
-  '';
+# postFixup = ''
+#   wrapProgram $out/bin/netdata-claim.sh --prefix PATH : ${openssl}/bin
+# '';
 
   meta = {
     description = "Real-time performance monitoring tool";
