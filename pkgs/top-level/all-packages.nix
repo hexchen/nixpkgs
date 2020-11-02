@@ -17791,6 +17791,8 @@ in
 
     ddcci-driver = callPackage ../os-specific/linux/ddcci { };
 
+    decklink = callPackage ../os-specific/linux/decklink { };
+
     digimend = callPackage ../os-specific/linux/digimend { };
 
     dpdk = callPackage ../os-specific/linux/dpdk { };
