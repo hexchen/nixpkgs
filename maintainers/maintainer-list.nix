@@ -3645,6 +3645,12 @@
     githubId = 131599;
     name = "Martin Weinelt";
   };
+  hexchen = {
+    email = "nix@lilwit.ch";
+    github = "hexchen";
+    githubId = 41522204;
+    name = "hexchen";
+  };
   hh = {
     email = "hh@m-labs.hk";
     github = "HarryMakes";
