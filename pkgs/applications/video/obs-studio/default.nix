@@ -1,4 +1,4 @@
-{ config, stdenv
+{ config, stdenv, lib
 , mkDerivation
 , fetchFromGitHub
 , addOpenGLRunpath
@@ -21,7 +21,12 @@
 , makeWrapper
 , pkgconfig
 , libvlc
-, mbedtls
+, mbedtls 
+
+, decklinkSupport ? false
+, blackmagicDesktopVideo
+, libcxx
+, libcxxabi
 
 , scriptingSupport ? true
 , luajit
@@ -82,9 +87,18 @@ in mkDerivation rec {
     "-Wno-dev" # kill dev warnings that are useless for packaging
   ];
 
+  wrapLibraries = [
+    xorg.libX11.out
+    libvlc
+  ] ++ (optional decklinkSupport [
+    blackmagicDesktopVideo
+    libcxx
+    libcxxabi
+  ]);
+
   postInstall = ''
       wrapProgram $out/bin/obs \
-        --prefix "LD_LIBRARY_PATH" : "${xorg.libX11.out}/lib:${libvlc}/lib"
+        --prefix "LD_LIBRARY_PATH" : "${lib.makeLibraryPath wrapLibraries}"
   '';
 
   postFixup = stdenv.lib.optionalString stdenv.isLinux ''
