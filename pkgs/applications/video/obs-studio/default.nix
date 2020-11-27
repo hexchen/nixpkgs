@@ -21,7 +21,11 @@
 , makeWrapper
 , pkgconfig
 , libvlc
-, mbedtls
+, mbedtls 
+
+, blackmagicDesktopVideo
+, libcxx
+, libcxxabi
 
 , scriptingSupport ? true
 , luajit
@@ -84,7 +88,7 @@ in mkDerivation rec {
 
   postInstall = ''
       wrapProgram $out/bin/obs \
-        --prefix "LD_LIBRARY_PATH" : "${xorg.libX11.out}/lib:${libvlc}/lib"
+        --prefix "LD_LIBRARY_PATH" : "${xorg.libX11.out}/lib:${libvlc}/lib:${blackmagicDesktopVideo}/lib:${libcxx}/lib:${libcxxabi}/lib"
   '';
 
   postFixup = stdenv.lib.optionalString stdenv.isLinux ''
