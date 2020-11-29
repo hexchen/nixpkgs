@@ -6,6 +6,7 @@
 , procps, libseccomp
 , nixosTests
 , buildxSupport ? false
+, zfs
 }:
 
 with lib;
@@ -77,7 +78,7 @@ rec {
       nativeBuildInputs = [ makeWrapper pkg-config go-md2man go libtool installShellFiles ];
       buildInputs = [ sqlite lvm2 btrfs-progs systemd libseccomp ];
 
-      extraPath = optionals (stdenv.isLinux) (makeBinPath [ iproute iptables e2fsprogs xz xfsprogs procps util-linux git ]);
+      extraPath = optionals (stdenv.isLinux) (makeBinPath [ iproute iptables e2fsprogs xz xfsprogs procps util-linux git zfs ]);
 
       buildPhase = ''
         export GOCACHE="$TMPDIR/go-cache"
