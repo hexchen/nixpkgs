@@ -5,6 +5,7 @@
 , btrfs-progs, iptables, e2fsprogs, xz, util-linux, xfsprogs, git
 , procps, libseccomp
 , nixosTests
+, zfs
 }:
 
 with lib;
@@ -140,7 +141,7 @@ rec {
 
     outputs = ["out" "man"];
 
-    extraPath = optionals (stdenv.isLinux) (makeBinPath [ iproute iptables e2fsprogs xz xfsprogs procps util-linux git ]);
+    extraPath = optionals (stdenv.isLinux) (makeBinPath [ iproute iptables e2fsprogs xz xfsprogs procps util-linux git zfs ]);
 
     installPhase = ''
       cd ./go/src/${goPackagePath}
