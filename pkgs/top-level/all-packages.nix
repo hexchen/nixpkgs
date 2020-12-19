@@ -18408,6 +18408,8 @@ in
 
   virtuoso = virtuoso6;
 
+  voctocore = callPackage ../servers/voctocore { };
+
   vsftpd = callPackage ../servers/ftp/vsftpd { };
 
   wallabag = callPackage ../servers/web-apps/wallabag { };
