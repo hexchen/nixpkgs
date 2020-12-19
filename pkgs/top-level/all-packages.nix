@@ -24695,6 +24695,8 @@ in
 
   vocal = callPackage ../applications/audio/vocal { };
 
+  voctogui = callPackage ../applications/video/voctogui { };
+
   vogl = libsForQt5.callPackage ../development/tools/vogl { };
 
   volnoti = callPackage ../applications/misc/volnoti { };
