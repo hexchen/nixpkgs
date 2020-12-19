@@ -8073,6 +8073,8 @@ in {
 
   vobject = callPackage ../development/python-modules/vobject { };
 
+  vocto = callPackage ../development/python-modules/vocto { };
+
   volkszaehler = callPackage ../development/python-modules/volkszaehler { };
 
   voluptuous = callPackage ../development/python-modules/voluptuous { };
