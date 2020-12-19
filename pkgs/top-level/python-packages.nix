@@ -7732,6 +7732,8 @@ in {
 
   vobject = callPackage ../development/python-modules/vobject { };
 
+  vocto = callPackage ../development/python-modules/vocto { };
+
   voluptuous = callPackage ../development/python-modules/voluptuous { };
 
   voluptuous-serialize = callPackage ../development/python-modules/voluptuous-serialize { };
