@@ -1437,6 +1437,8 @@ in {
 
   bunch = callPackage ../development/python-modules/bunch { };
 
+  bundlewrap = callPackage ../development/python-modules/bundlewrap { };
+
   bx-python = callPackage ../development/python-modules/bx-python { };
 
   bwapy = callPackage ../development/python-modules/bwapy { };
