@@ -18965,6 +18965,8 @@ with pkgs;
     inherit (darwin.apple_sdk_11_0.frameworks) CoreFoundation Security;
   };
 
+  decklink-sdk = callPackage ../tools/video/decklink-sdk { };
+
   devbox = callPackage ../development/tools/devbox { };
 
   libcxx = llvmPackages.libcxx;
